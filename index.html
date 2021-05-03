@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Neuronal - Color de texto</title>
+
+  <style>
+  #color-picker{
+    padding: 5rem;
+    font-size: 5rem;
+    margin-left: 15rem;
+  }
+  </style>
+</head>
+<body>
+  <input class="jscolor {onFineChange:'update(this)'}" value="cedefe">
+  <div id="color-picker">Red Neuronal :)</div>
+
+  <script src="./libs/js/jscolor.min.js"></script>
+  <script src="./libs/js/brain-browser.min.js"></script>
+  <script>
+  var container = document.getElementById('color-picker');
+
+  // Creación de RN
+  var network = new brain.NeuralNetwork();
+
+  // Entrenamiento
+  network.train([
+    {input: {r:0, g:0, b:0}, output: {color:1}},
+    {input: {r:1, g:1, b:1}, output: {color:0}},
+    {input: {r:0, g:1, b:0}, output: {color:0}},
+    {input: {r:0, g:0, b:1}, output: {color:1}},
+    {input: {r:1, g:0, b:0}, output: {color:1}}
+  ]);
+
+  function update(color){
+    // Uso RN enviando valor seleccionado para que me devuelva el color de texto
+    // Se divide por 255 para que devuelva un valor entre 0 y 1
+    var input = {
+      r: color.channels.r/255,
+      g: color.channels.g/255,
+      b: color.channels.b/255
+    }
+    var colorPrediction = network.run(input);
+
+    container.style.backgroundColor = color.toHEXString();
+    container.style.color = (colorPrediction.color > .5) ? '#ffffff' : '#000000';
+  }
+  </script>
+</body>
+</html>
